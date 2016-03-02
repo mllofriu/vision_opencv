@@ -46,7 +46,7 @@
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include "opencv2/features2d.hpp"
+#include "opencv2/features2d/features2d.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
 #include <dynamic_reconfigure/server.h>
@@ -76,14 +76,15 @@ class FeatureDetectorNodelet : public opencv_apps::Nodelet
 	static bool need_config_update_;
 
 	int num_features_;
-	cv::Ptr<cv::FeatureDetector> ORB_detector_;
+	//cv::Ptr<cv::FeatureDetector> ORB_detector_;
+	cv::ORB * ORB_detector_;
 
 	void reconfigureCallback(
 			feature_detector::FeatureDetectorConfig& new_config,
 			uint32_t level) {
 		config_ = new_config;
 		num_features_ = config_.num_features;
-		ORB_detector_ = cv::ORB::create(num_features_);
+		ORB_detector_ = new cv::ORB(num_features_);
 	}
 
 	const std::string& frameWithDefault(const std::string& frame,
@@ -119,7 +120,7 @@ class FeatureDetectorNodelet : public opencv_apps::Nodelet
 			int numFeaturesTracker = 100;
 
 			if ( frame.channels() > 1 ) {
-				cv::cvtColor( frame, src_gray, cv::COLOR_YUV2GRAY_YUYV );
+				cv::cvtColor( frame, src_gray, cv::COLOR_RGB2GRAY );
 			} else {
 				src_gray = frame;
 				cv::cvtColor( src_gray, frame, cv::COLOR_GRAY2BGR );
@@ -146,7 +147,7 @@ class FeatureDetectorNodelet : public opencv_apps::Nodelet
 			/// Apply corner detection
 			cv::Mat mask;
 			NODELET_INFO_STREAM("Images dimension: "<< src_gray.size());
-			ORB_detector_->detectAndCompute(src_gray,cv::noArray(), keypoints, descriptors);
+			(*ORB_detector_)(src_gray,cv::noArray(), keypoints, descriptors);
 
 			/// Draw corners detected
 			NODELET_INFO_STREAM("** Number of features detected: "<< keypoints.size());
@@ -234,7 +235,7 @@ public:
 		int nlevels_ = 8;
 		int edge_threshold_ = 31;
 		//	ORB_detector_ = new cv::ORB(num_features_,scale_factor_,nlevels_,edge_threshold_);
-		ORB_detector_ = cv::ORB::create(num_features_);
+		ORB_detector_ = new cv::ORB(num_features_);
 		dynamic_reconfigure::Server<feature_detector::FeatureDetectorConfig>::CallbackType f =
 				boost::bind(&FeatureDetectorNodelet::reconfigureCallback, this, _1, _2);
 		srv.setCallback(f);
