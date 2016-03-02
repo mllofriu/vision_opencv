@@ -7,6 +7,7 @@ find_package(OpenCV REQUIRED)
 message(STATUS "OpenCV Components: ${OpenCV_LIB_COMPONENTS}")
 if(OpenCV_VERSION VERSION_LESS "3.0" OR TARGET opencv_optflow)
   set(OPENCV_HAVE_OPTFLOW TRUE)
+  message("Using opencv older than 3.0")
 endif()
 
 # generate the dynamic_reconfigure config file
@@ -15,6 +16,7 @@ generate_dynamic_reconfigure_options(
   cfg/FindContours.cfg cfg/ConvexHull.cfg cfg/GeneralContours.cfg cfg/ContourMoments.cfg
   cfg/FaceDetection.cfg
   cfg/GoodfeatureTrack.cfg
+  cfg/FeatureDetector.cfg
   #
   cfg/CamShift.cfg
   cfg/FBackFlow.cfg
@@ -61,6 +63,8 @@ add_message_files(
    Contour.msg
    ContourArray.msg
    ContourArrayStamped.msg
+   KeyPoint.msg
+   Frame.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -94,6 +98,7 @@ add_library(${PROJECT_NAME} SHARED
   src/nodelet/face_detection_nodelet.cpp
   # TrackingMotion
   src/nodelet/goodfeature_track_nodelet.cpp
+  src/nodelet/feature_detector_nodelet.cpp
   # https://github.com/Itseez/opencv/blob/2.4/samples/cpp
   # 3calibration.cpp
   # bagofwords_classification.cpp
@@ -228,6 +233,10 @@ add_executable(goodfeature_track_exe src/node/goodfeature_track.cpp)
 SET_TARGET_PROPERTIES(goodfeature_track_exe PROPERTIES OUTPUT_NAME goodfeature_track)
 target_link_libraries(goodfeature_track_exe ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
+add_executable(feature_detector_exe src/node/feature_detector.cpp)
+SET_TARGET_PROPERTIES(feature_detector_exe PROPERTIES OUTPUT_NAME feature_detector)
+target_link_libraries(feature_detector_exe ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
   # bgfg_gmg.cpp
   # bgfg_segm.cpp
   # calibration.cpp
@@ -296,7 +305,7 @@ target_link_libraries(watershed_segmentation_exe ${catkin_LIBRARIES} ${OpenCV_LI
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
-install(TARGETS edge_detection_exe hough_lines_exe hough_circles_exe face_detection_exe goodfeature_track_exe
+install(TARGETS edge_detection_exe hough_lines_exe hough_circles_exe face_detection_exe goodfeature_track_exe feature_detector_exe
   camshift_exe simple_example_exe simple_compressed_example_exe fback_flow_exe lk_flow_exe people_detect_exe phase_corr_exe segment_objects_exe watershed_segmentation_exe
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

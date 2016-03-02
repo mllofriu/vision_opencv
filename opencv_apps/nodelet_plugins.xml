@@ -35,6 +35,10 @@
   <class name="goodfeature_track/goodfeature_track" type="goodfeature_track::GoodfeatureTrackNodelet" base_class_type="nodelet::Nodelet">
     <description>Nodelet for detecting corners using Shi-Tomasi method</description>
   </class>
+  
+  <class name="feature_detector/feature_detector" type="feature_detector::FeatureDetectorNodelet" base_class_type="nodelet::Nodelet">
+    <description>Nodelet for detecting features such as SIFT, FAST and ORB</description>
+  </class>
 
   <class name="camshift/camshift" type="camshift::CamShiftNodelet" base_class_type="nodelet::Nodelet">
     <description>Nodelet to show mean-shift based tracking</description>
