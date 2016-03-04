@@ -146,11 +146,11 @@ class FeatureDetectorNodelet : public opencv_apps::Nodelet
 
 			/// Apply corner detection
 			cv::Mat mask;
-			NODELET_INFO_STREAM("Images dimension: "<< src_gray.size());
+			//NODELET_INFO_STREAM("Images dimension: "<< src_gray.size());
 			(*ORB_detector_)(src_gray,cv::noArray(), keypoints, descriptors);
 
 			/// Draw corners detected
-			NODELET_INFO_STREAM("** Number of features detected: "<< keypoints.size());
+			//NODELET_INFO_STREAM("** Number of features detected: "<< keypoints.size());
 
 			//-- Show what you got
 			if( publish_image_){
@@ -229,7 +229,7 @@ public:
 		prev_stamp_ = ros::Time(0, 0);
 
 		window_name_ = "Image";
-		num_features_ = 23;
+		num_features_ = 4000;
 
 		float scale_factor_ = 1.2f;
 		int nlevels_ = 8;
